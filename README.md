@@ -13,7 +13,9 @@ Features
 * Items
 * Essences 
 * Names
-More to come!
+* EXP
+* Level
+* Demon ID
 
 Run the script
 ```python shinv.py```
