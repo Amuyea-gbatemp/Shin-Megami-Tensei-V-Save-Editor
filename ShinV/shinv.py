@@ -3,19 +3,15 @@
 import sys, os
 import binascii
 import struct
-
-from PyQt5 import QtWidgets
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 import functools
 from shinVvalues import *
-from datetime import datetime
-import shutil
 import re
 import codecs
 
-class ShinApp(QMainWindow):
+class ShinVApp(QMainWindow):
 
     def __init__(self):
         super().__init__()
@@ -106,14 +102,12 @@ class ShinApp(QMainWindow):
         tabContainer = QTabWidget(centralWidget)
 
         tab1 = QWidget(tabContainer)
-        tab2 = QWidget(tabContainer)
 
         tab1layout = QVBoxLayout(tab1)
 
         tabContainer.setLayout(tab1layout)
 
         tabContainer.addTab(tab1, "Main Save")
-        #tabContainer.addTab(tab2, "Demon ID/Skill ID")
 
         tabContainer.setCurrentIndex(0)
         centralWidgetLayout.addWidget(tabContainer)
@@ -177,16 +171,6 @@ class ShinApp(QMainWindow):
         btn_magatama.setToolTip('Essence')
         btn_magatama.move(200, 240)
         btn_magatama.clicked.connect(lambda: self.show_statwindow("Essences"))
-
-
-        #########################################
-        #               Tab 2                   #
-        #########################################
-
-        btn_money = QPushButton('Hero_$', tab2)
-        btn_money.setToolTip(f"Hero's Money")
-        btn_money.move(35, 30)
-        btn_money.clicked.connect(lambda: self.show_statwindow("HeroMoney_2"))
 
         self.show()
 
@@ -323,7 +307,7 @@ class ShinApp(QMainWindow):
             self.layout = QVBoxLayout()
 
             #########################################
-            #             Save 1 Offsets            #
+            #             Save  Offsets             #
             #########################################
 
             if (category == "GameMode"):
@@ -370,16 +354,6 @@ class ShinApp(QMainWindow):
                 statNames = essenceList
                 statOffsets = essence_offsets
 
-            #########################################
-            #             Save 2 Offsets            #
-            #########################################
-
-            #if (category == "HeroMoney_2"):
-            #    statNames = moneyList
-            #    statOffsets = save_2_moneyOffsets
-
-            #######
-
             self.tableWidget = QTableWidget()
             self.tableWidget.setColumnCount(2)
 
@@ -397,14 +371,7 @@ class ShinApp(QMainWindow):
                     self.tableWidget.setItem(x, 1, QTableWidgetItem(
                         str(self.readFromPosition(statOffsets[x], statOffsets[x] + 4, "<L"))))
 
-            elif (category == "CharacterDemonSkill" or category == "DemonID"):
-                self.tableWidget.setRowCount(len(statNames))
-                for x in range(len(statOffsets)):
-                    self.tableWidget.setItem(x, 0, QTableWidgetItem(statNames[x]))
-                    self.tableWidget.setItem(x, 1, QTableWidgetItem(
-                        str(self.readFromPosition2bytes(statOffsets[x], statOffsets[x] + 2, ">L"))))
-
-            elif (category == "CharacterDemonHPMP" or category == "CharacterDemonStats" ):
+            elif (category == "CharacterDemonHPMP" or category == "CharacterDemonStats" or category == "CharacterDemonSkill" or category == "DemonID"):
                 self.tableWidget.setRowCount(len(statNames))
                 for x in range(len(statOffsets)):
                     self.tableWidget.setItem(x, 0, QTableWidgetItem(statNames[x]))
@@ -449,9 +416,8 @@ class ShinApp(QMainWindow):
             def writeStats():
                 for x in range(len(statOffsets)):
                     value = int(self.tableWidget.item(x, 1).text())
-                    if (value <= 9999999):
+                    if (value <= 99999999):
                         self.writeToPosition(value, statOffsets[x], statOffsets[x] + 4, "<L")
-                        #print(value)
                     else:
                         msg = QMessageBox()
                         msg.setIcon(QMessageBox.Warning)
@@ -468,7 +434,6 @@ class ShinApp(QMainWindow):
                     value = int(self.tableWidget.item(x, 1).text())
                     if (value <= 255):
                         self.writeToPosition(value, statOffsets[x], statOffsets[x] + 1, "<B")
-                        # print(value)
                     else:
                         msg = QMessageBox()
                         msg.setIcon(QMessageBox.Warning)
@@ -484,7 +449,7 @@ class ShinApp(QMainWindow):
                 for x in range(len(statOffsets)):
                     value = int(self.tableWidget.item(x, 1).text())
                     if (value <= 65535):
-                        self.writeToPosition(value, statOffsets[x], statOffsets[x] + 1, "<L")
+                        self.writeToPosition(value, statOffsets[x], statOffsets[x] + 2, "<H")
                         print(value)
                     else:
                         msg = QMessageBox()
@@ -498,14 +463,8 @@ class ShinApp(QMainWindow):
                         statwindow.done(0)
 
             def give_items_number():
-                # Items
-                if (category == "CharacterStats" or category == "DemonStats"):
-                    amount, okPressed = QInputDialog.getInt(self, "Items", "Amount:", 0, 0, 0x3E7, 10)
-                    if okPressed:
-                        for x in range(len(statOffsets)):
-                            value = self.tableWidget.item(x, 1).setText(str(amount))
 
-                elif (category == "GameMode"):
+                if (category == "GameMode"):
                     amount, okPressed = QInputDialog.getInt(self, "Items", "Amount:", 0, 0, 0x3, 10)
                     if okPressed:
                         for x in range(len(statOffsets)):
@@ -541,8 +500,6 @@ class ShinApp(QMainWindow):
             else:
                 button_save.clicked.connect(write2bytesStats2bytes)
 
-            #button_save.clicked.connect(writeStats)
-
             button_give.clicked.connect(give_items_number)
 
             button_cancel = QPushButton("Cancel")
@@ -550,7 +507,7 @@ class ShinApp(QMainWindow):
             hbox = QHBoxLayout()
             hbox.addWidget(button_save)
             hbox.addWidget(button_cancel)
-            if (category != "MoneyGlory" and category != "CharacterSkill" and category != "DemonSkill"and category != "Names"):
+            if (category != "Names" and category != "MoneyGlory" and category != "CharacterDemonHPMP" and category != "CharacterDemonStats" and category != "CharacterDemonSkill" and category != "CharacterDemonLevel" and category != "CharacterDemonExp" and category != "DemonID"):
                 hbox.addWidget(button_give)
 
             self.layout.addLayout(hbox)
@@ -569,19 +526,17 @@ class ShinApp(QMainWindow):
         valueToRead = (binascii.unhexlify(h[startOffset * 2:endOffset * 2]))
         valueToRead1 = binascii.hexlify(valueToRead)
         valueToRead2 = codecs.decode(valueToRead1, "hex").decode('utf-8')
-        #print(valueToRead2)
         valueToRead3 = valueToRead2.replace("\x00", "")
-        #print(valueToRead2)
         return valueToRead3
 
-    # Read Offset Money, EXP don't touch
+    # Read 3-4 bytes
     def readFromPosition(self, startOffset, endOffset, type):
         valueToRead = (binascii.unhexlify(h[startOffset * 2:endOffset * 2]))
         valueToRead1 = struct.unpack(type, valueToRead)
         valueToRead2 = functools.reduce(lambda rst, d: rst * 10 + d, (valueToRead1))
         return valueToRead2
 
-    # Skill
+    # Read 2 bytes (00 00)
     def readFromPosition2bytes(self, startOffset, endOffset, type):
         valueToRead = (binascii.unhexlify(h[startOffset * 2:endOffset * 2]))
         reverseval = bytes([c for t in zip(valueToRead[1::2], valueToRead[::2]) for c in t])
@@ -589,14 +544,7 @@ class ShinApp(QMainWindow):
         valueToRead2 = int(valueToRead1, 16)
         return valueToRead2
 
-    # Skills don't touch
-    def readFromPositionskill(self, startOffset, endOffset, type):
-        valueToRead = (binascii.unhexlify(h[startOffset * 2:endOffset * 2]))
-        valueToRead1 = binascii.hexlify(valueToRead)
-        valueToRead2 = int(valueToRead1, 16)
-        return valueToRead2
-
-    # Items don't touch
+    # Read a byte (00)
     def readFromPositionbyte(self, startOffset, endOffset, type):
         valueToRead = (binascii.unhexlify(h[startOffset * 2:endOffset * 2]))
         valueToRead1 = binascii.hexlify(valueToRead)
@@ -608,7 +556,6 @@ class ShinApp(QMainWindow):
         global h
         valueToWrite = binascii.hexlify(struct.pack(type, value))
         h = h[:startOffset * 2] + valueToWrite + h[endOffset * 2:]
-        print(valueToWrite)
 
     # Write to Save Name
     def writeToPositionName(self, value, startOffset, endOffset, type):
@@ -623,5 +570,5 @@ if __name__ == '__main__':
         font = app.font()
         font.setPointSize(9)
         app.setFont(font)
-    ex = ShinApp()
+    ex = ShinVApp()
     sys.exit(app.exec_())
