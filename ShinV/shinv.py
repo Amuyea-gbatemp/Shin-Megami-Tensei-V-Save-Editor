@@ -125,7 +125,7 @@ class ShinApp(QMainWindow):
 
         btn_mode = QPushButton('Mode', tab1)
         btn_mode.setToolTip(f"Game's Mode")
-        btn_mode.move(35, 30)
+        btn_mode.move(30, 30)
         btn_mode.clicked.connect(lambda: self.show_statwindow("GameMode"))
 
         btn_name = QPushButton('Names', tab1)
@@ -138,35 +138,46 @@ class ShinApp(QMainWindow):
         btn_moneyglory.move(400, 30)
         btn_moneyglory.clicked.connect(lambda: self.show_statwindow("MoneyGlory"))
 
-        btn_characterstat = QPushButton('Character_Stats', tab1)
-        btn_characterstat.setToolTip('Character Stats HP, MP Str, Mag, Vit, Agi, Luc')
-        btn_characterstat.move(30, 100)
-        btn_characterstat.clicked.connect(lambda: self.show_statwindow("CharacterStats"))
+        btn_characterdemonstat = QPushButton('HP & MP', tab1)
+        btn_characterdemonstat.setToolTip('Character & Demons HP, MP')
+        btn_characterdemonstat.move(30, 100)
+        btn_characterdemonstat.clicked.connect(lambda: self.show_statwindow("CharacterDemonHPMP"))
 
-        btn_demonsubstat = QPushButton('Character_Skill', tab1)
-        btn_demonsubstat.setToolTip('Character Skills')
-        btn_demonsubstat.move(200, 100)
-        btn_demonsubstat.clicked.connect(lambda: self.show_statwindow("CharacterSkill"))
+        btn_characterdemonstats = QPushButton('Stats', tab1)
+        btn_characterdemonstats.setToolTip('Character & Demons Str, Mag, Vit, Agi, Luc')
+        btn_characterdemonstats.move(200, 100)
+        btn_characterdemonstats.clicked.connect(lambda: self.show_statwindow("CharacterDemonStats"))
 
-        btn_demonstats = QPushButton('Demon_Stats', tab1)
-        btn_demonstats.setToolTip('Demon Stats HP, MP Str, Mag, Vit, Agi, Luc')
-        btn_demonstats.move(400, 100)
-        btn_demonstats.clicked.connect(lambda: self.show_statwindow("DemonStats"))
+        btn_characterdemonskills = QPushButton('Skills', tab1)
+        btn_characterdemonskills.setToolTip('Character & Demons Skills')
+        btn_characterdemonskills.move(400, 100)
+        btn_characterdemonskills.clicked.connect(lambda: self.show_statwindow("CharacterDemonSkill"))
 
-        btn_demonskills = QPushButton('Demon_Skill', tab1)
-        btn_demonskills.setToolTip('Demon Skills')
-        btn_demonskills.move(600, 100)
-        btn_demonskills.clicked.connect(lambda: self.show_statwindow("DemonSkill"))
+        btn_level = QPushButton('Level', tab1)
+        btn_level.setToolTip('Character & Demon Level')
+        btn_level.move(30, 170)
+        btn_level.clicked.connect(lambda: self.show_statwindow("CharacterDemonLevel"))
+
+        btn_exp = QPushButton('Exp', tab1)
+        btn_exp.setToolTip('Character & Demon Level')
+        btn_exp.move(200, 170)
+        btn_exp.clicked.connect(lambda: self.show_statwindow("CharacterDemonExp"))
+
+        btn_demonid = QPushButton('Demon_ID', tab1)
+        btn_demonid.setToolTip('Demon IDs')
+        btn_demonid.move(400, 170)
+        btn_demonid.clicked.connect(lambda: self.show_statwindow("DemonID"))
 
         btn_items = QPushButton('Items', tab1)
         btn_items.setToolTip('Items')
-        btn_items.move(35, 170)
-        btn_items.clicked.connect(lambda: self.show_statwindow("Items"))
+        btn_items.move(30, 240)
+        btn_items.clicked.connect(lambda: self.show_statwindow("Items_"))
 
         btn_magatama = QPushButton('Essence', tab1)
         btn_magatama.setToolTip('Essence')
-        btn_magatama.move(200, 170)
+        btn_magatama.move(200, 240)
         btn_magatama.clicked.connect(lambda: self.show_statwindow("Essences"))
+
 
         #########################################
         #               Tab 2                   #
@@ -187,14 +198,6 @@ class ShinApp(QMainWindow):
             return
         #if (os.path.getsize(filename[0]) == 6291456):  # Filesize check
         if (os.path.getsize(filename[0]) >= 300000):  # Filesize check
-            today = datetime.now()
-            date_format = today.strftime("backup_%I_%M_%p_%d_%b_%Y")
-
-            last = filename[0].split('/')
-            lstwrd = last[-1]
-            dst_dir = date_format + lstwrd
-            shutil.copyfile(filename[0], dst_dir)
-
             f = open(filename[0], "rb").read()
             global h
             h = (binascii.hexlify(f))
@@ -213,13 +216,6 @@ class ShinApp(QMainWindow):
             savedir = QFileDialog.getSaveFileName(self, 'Save File', 'GameSave')
             if savedir[0] == '':
                 return
-
-            #today = datetime.now()
-            #date_format = today.strftime("backup_save_%I_%M_%p_%d_%b_%Y")
-            #last = savedir[0].split('/')
-            #lstwrd = last[-1]
-            #dst_dir = date_format + lstwrd
-            #shutil.copyfile(savedir[0], dst_dir)
 
             file = open(savedir[0], "wb")
             file.write(binascii.unhexlify(h))
@@ -342,23 +338,31 @@ class ShinApp(QMainWindow):
                 statNames = moneygloryList
                 statOffsets = money_glory_offsets
 
-            elif(category == "CharacterStats"):
-                statNames = characterstatsList
-                statOffsets = character_stats_offsets
+            elif(category == "CharacterDemonHPMP"):
+                statNames = characterdemonhpmpList
+                statOffsets = characterdemon_hpmp_offsets
 
-            elif (category == "CharacterSkill"):
-                statNames = characterskillList
-                statOffsets = character_skill_offsets
+            elif (category == "CharacterDemonStats"):
+                statNames = characterdemonstatsList
+                statOffsets = characterdemon_stats_offsets
 
-            elif (category == "DemonStats"):
-                statNames = demonstatList
-                statOffsets = demon_stats_offsets
+            elif (category == "CharacterDemonSkill"):
+                statNames = characterdemonskillList
+                statOffsets = characterdemon_skill_offsets
 
-            elif (category == "DemonSkill"):
-                statNames = demonskillList
-                statOffsets = demon_skill_offsets
+            elif (category == "CharacterDemonLevel"):
+                statNames = levelList
+                statOffsets = chardemon_level_offsets
 
-            elif (category == "Items"):
+            elif (category == "CharacterDemonExp"):
+                statNames = expList
+                statOffsets = chardemon_exp_offsets
+
+            elif (category == "DemonID"):
+                statNames = demonidlist
+                statOffsets = demon_id_offsets
+
+            elif (category == "Items_"):
                 statNames = itemList
                 statOffsets = item_offsets
 
@@ -386,21 +390,28 @@ class ShinApp(QMainWindow):
                     self.tableWidget.setItem(x, 1, QTableWidgetItem(
                         str(self.readFromPositionName(NamestatOffsets[x], NamestatOffsets[x] + 16, ">LL"))))
 
-            elif (category == "MoneyGlory"):
+            elif (category == "MoneyGlory" or category == "CharacterDemonExp"):
                 self.tableWidget.setRowCount(len(statNames))
                 for x in range(len(statOffsets)):
                     self.tableWidget.setItem(x, 0, QTableWidgetItem(statNames[x]))
                     self.tableWidget.setItem(x, 1, QTableWidgetItem(
                         str(self.readFromPosition(statOffsets[x], statOffsets[x] + 4, "<L"))))
 
-            elif (category == "CharacterSkill" or category == "DemonSkill"):
+            elif (category == "CharacterDemonSkill" or category == "DemonID"):
                 self.tableWidget.setRowCount(len(statNames))
                 for x in range(len(statOffsets)):
                     self.tableWidget.setItem(x, 0, QTableWidgetItem(statNames[x]))
                     self.tableWidget.setItem(x, 1, QTableWidgetItem(
                         str(self.readFromPosition2bytes(statOffsets[x], statOffsets[x] + 2, ">L"))))
 
-            elif(category == "Essences" or category == "Items" or category == "GameMode" or category == "CharacterStats" or category == "DemonStats"):
+            elif (category == "CharacterDemonHPMP" or category == "CharacterDemonStats" ):
+                self.tableWidget.setRowCount(len(statNames))
+                for x in range(len(statOffsets)):
+                    self.tableWidget.setItem(x, 0, QTableWidgetItem(statNames[x]))
+                    self.tableWidget.setItem(x, 1, QTableWidgetItem(
+                        str(self.readFromPosition2bytes(statOffsets[x], statOffsets[x] + 2, ">L"))))
+
+            elif(category == "GameMode" or category == "Essences" or category == "Items_" or category == "CharacterDemonLevel"):
                 self.tableWidget.setRowCount(len(statNames))
                 for x in range(len(statOffsets)):
                     self.tableWidget.setItem(x, 0, QTableWidgetItem(statNames[x]))
@@ -452,12 +463,29 @@ class ShinApp(QMainWindow):
                     if (x == len(statOffsets) - 1):
                         statwindow.done(0)
 
+            def write1b1yteStats1byte():
+                for x in range(len(statOffsets)):
+                    value = int(self.tableWidget.item(x, 1).text())
+                    if (value <= 255):
+                        self.writeToPosition(value, statOffsets[x], statOffsets[x] + 1, "<B")
+                        # print(value)
+                    else:
+                        msg = QMessageBox()
+                        msg.setIcon(QMessageBox.Warning)
+                        msg.setText("One or more values are too high!")
+                        msg.setWindowTitle("Error")
+                        msg.exec_()
+                        return
+
+                    if (x == len(statOffsets) - 1):
+                        statwindow.done(0)
+
             def write2bytesStats2bytes():
                 for x in range(len(statOffsets)):
                     value = int(self.tableWidget.item(x, 1).text())
-                    if (value <= 999999):
+                    if (value <= 65535):
                         self.writeToPosition(value, statOffsets[x], statOffsets[x] + 1, "<L")
-                        #print(value)
+                        print(value)
                     else:
                         msg = QMessageBox()
                         msg.setIcon(QMessageBox.Warning)
@@ -489,7 +517,7 @@ class ShinApp(QMainWindow):
                         for x in range(len(statOffsets)):
                             value = self.tableWidget.item(x, 1).setText(str(amount))
 
-                elif(category == "Items"):
+                elif(category == "Items_"):
                     amount, okPressed = QInputDialog.getInt(self, "Items", "Amount:", 0, 0, 0x3E7, 10)
                     if okPressed:
                         for x in range(len(statOffsets)):
@@ -501,8 +529,15 @@ class ShinApp(QMainWindow):
             if (category == "Names"):
                 button_save.clicked.connect(writeStatsName)
 
-            elif (category == "GameMode" or category =="Essences" or category == "Items" or category == "MoneyGlory" or category == "CharacterStats" or category == "DemonStats"):
+            elif (category == "MoneyGlory"):
                 button_save.clicked.connect(writeStats)
+
+            elif (category == "CharacterDemonSkill" or category == "CharacterDemonStats" or category == "CharacterDemonHPMP"):
+                button_save.clicked.connect(write2bytesStats2bytes)
+
+            elif (category == "GameMode" or category =="Essences" or category == "Items_" or category == "CharacterDemonLevel"):
+                button_save.clicked.connect(write1b1yteStats1byte)
+
             else:
                 button_save.clicked.connect(write2bytesStats2bytes)
 
@@ -515,7 +550,7 @@ class ShinApp(QMainWindow):
             hbox = QHBoxLayout()
             hbox.addWidget(button_save)
             hbox.addWidget(button_cancel)
-            if (category != "MoneyGlory" and category != "CharacterSkill" and category != "DemonSkill" and category != "GameMode" and category != "Names"):
+            if (category != "MoneyGlory" and category != "CharacterSkill" and category != "DemonSkill"and category != "Names"):
                 hbox.addWidget(button_give)
 
             self.layout.addLayout(hbox)
@@ -546,7 +581,7 @@ class ShinApp(QMainWindow):
         valueToRead2 = functools.reduce(lambda rst, d: rst * 10 + d, (valueToRead1))
         return valueToRead2
 
-    # SUBs don't touch
+    # Skill
     def readFromPosition2bytes(self, startOffset, endOffset, type):
         valueToRead = (binascii.unhexlify(h[startOffset * 2:endOffset * 2]))
         reverseval = bytes([c for t in zip(valueToRead[1::2], valueToRead[::2]) for c in t])
@@ -557,7 +592,6 @@ class ShinApp(QMainWindow):
     # Skills don't touch
     def readFromPositionskill(self, startOffset, endOffset, type):
         valueToRead = (binascii.unhexlify(h[startOffset * 2:endOffset * 2]))
-        #print(valueToRead)
         valueToRead1 = binascii.hexlify(valueToRead)
         valueToRead2 = int(valueToRead1, 16)
         return valueToRead2
@@ -574,6 +608,7 @@ class ShinApp(QMainWindow):
         global h
         valueToWrite = binascii.hexlify(struct.pack(type, value))
         h = h[:startOffset * 2] + valueToWrite + h[endOffset * 2:]
+        print(valueToWrite)
 
     # Write to Save Name
     def writeToPositionName(self, value, startOffset, endOffset, type):
