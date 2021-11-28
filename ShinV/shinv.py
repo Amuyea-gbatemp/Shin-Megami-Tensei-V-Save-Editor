@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Shin Megami Tensei III Nocturne HD Save Editor
+# Shin Megami Tensei V Save Editor
 import sys, os
 import binascii
 import struct
@@ -25,9 +25,6 @@ class ShinVApp(QMainWindow):
         centerPoint = QDesktopWidget().availableGeometry().center()
         qtRectangle.moveCenter(centerPoint)
         self.move(qtRectangle.topLeft())
-        #self.width = width
-        #self.height = height
-        #self.setFixedSize(width, height)
         self.setMinimumSize(width, height)
 
         self.initUI()
@@ -118,7 +115,7 @@ class ShinVApp(QMainWindow):
         #########################################
 
         btn_mode = QPushButton('Mode', tab1)
-        btn_mode.setToolTip(f"Game's Mode")
+        btn_mode.setToolTip("Game's Mode")
         btn_mode.move(30, 30)
         btn_mode.clicked.connect(lambda: self.show_statwindow("GameMode"))
 
@@ -178,13 +175,26 @@ class ShinVApp(QMainWindow):
     @pyqtSlot()
     def openfile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open File', 'GameSave0')
+
         if filename[0] == '':
             return
-        #if (os.path.getsize(filename[0]) == 6291456):  # Filesize check
+
         if (os.path.getsize(filename[0]) >= 300000):  # Filesize check
             f = open(filename[0], "rb").read()
-            global h
-            h = (binascii.hexlify(f))
+            i = int.from_bytes(f[:4], byteorder='little', signed=False)
+
+            if i == 1396790855:
+                global h
+                h = (binascii.hexlify(f))
+
+            else:
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Warning)
+                msg.setText("Not a valid savefile! \nPlease decrypt the save file and try again!")
+                msg.setWindowTitle("Not valid")
+                msg.setWindowIcon(QIcon(root + '/img/icon.ico'))
+                msg.buttonClicked.connect(self.openfile)
+                msg.exec_()
 
         else:
             msg = QMessageBox()
@@ -234,8 +244,7 @@ class ShinVApp(QMainWindow):
         l2 = QLabel()
 
         l1.setText("<center><b>HOW TO USE</b><br><br></center>")
-        l2.setText(
-            "<ul><li>1. Dump your save with your preferred save manager</li><li>2. Open your save (savedata)</li><li>3. Edit stuff to your liking</li><li>4. Save it (Ctrl + S)</li><li>5. Overwrite your save with the one you just edited</li><li>6. That's it!</li></ul>")
+        l2.setText("<ul><li>1. Dump your save with your preferred save manager</li><li>2. Open your save (savedata)</li><li>3. Edit stuff to your liking</li><li>4. Save it (Ctrl + S)</li><li>5. Overwrite your save with the one you just edited</li><li>6. That's it!</li></ul>")
 
         l1.setAlignment(Qt.AlignLeft)
         l2.setAlignment(Qt.AlignLeft)
